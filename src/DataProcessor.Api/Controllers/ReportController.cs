@@ -13,7 +13,7 @@ namespace DataProcessor.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+//[Authorize]
 public class ReportController : ControllerBase
 {
     private readonly IReportProcessor _reportProcessor;
@@ -35,7 +35,7 @@ public class ReportController : ControllerBase
 
     [HttpPost("amazon-sales")]
     public async Task<ActionResult<ReportResultResponse>> ProcessAmazonSales(
-        [FromForm] IFormFile file,
+        IFormFile file,
         CancellationToken cancellationToken = default)
     {
         var user = await ResolveUserAsync(cancellationToken);
