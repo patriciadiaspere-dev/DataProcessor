@@ -65,11 +65,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> main
 var app = builder.Build();
 
 app.UseMiddleware<DataProcessor.Api.Middleware.ExceptionMiddleware>();
@@ -77,17 +72,12 @@ app.UseMiddleware<DataProcessor.Api.Middleware.ExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-<<<<<<< HEAD
-    app.UseSwaggerUI();
-=======
-    //app.UseSwaggerUI();
+
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "DataProcessor API v1");
         c.RoutePrefix = string.Empty;
     });
-
->>>>>>> main
 }
 
 app.UseHttpsRedirection();
