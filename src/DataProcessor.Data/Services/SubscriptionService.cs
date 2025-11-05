@@ -12,6 +12,22 @@ public class SubscriptionService : ISubscriptionService
         _subscriptionRepository = subscriptionRepository;
     }
 
+    public async Task CreateTrialSubscriptionAsync(User user, CancellationToken cancellationToken = default)
+    {
+        var subscription = new Subscription
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            PlanType = "trial",
+            StartDate = user.CreatedAt,
+            EndDate = user.TrialExpiresAt,
+            IsActive = true
+        };
+
+        await _subscriptionRepository.AddAsync(subscription, cancellationToken);
+        await _subscriptionRepository.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<string> GetUserStatusAsync(User user, CancellationToken cancellationToken = default)
     {
         if (user.TrialExpiresAt > DateTime.UtcNow)
