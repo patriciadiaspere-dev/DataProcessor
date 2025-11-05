@@ -1,2 +1,75 @@
 # DataProcessor
-Processador de dados para relatorios
+
+API para processamento de relatórios Amazon Sales com autenticação JWT e suporte a exportação em Excel.
+
+## Como funciona
+
+1. Usuário realiza cadastro com CNPJ, e-mail, empresa e senha.
+2. Login retorna um token JWT válido e o status atual (trial, expirado ou assinado).
+3. Enquanto o trial de 3 dias estiver ativo, o usuário pode enviar o arquivo `.txt` da Amazon.
+4. O backend processa o arquivo, agrupa os dados por ASIN e preço, e devolve um resumo em JSON.
+5. Opcionalmente, o usuário pode solicitar o mesmo processamento em formato Excel.
+
+## Endpoints principais
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/user/me`
+- `GET /api/user/status`
+- `POST /api/report/amazon-sales`
+- `POST /api/report/amazon-sales/export`
+
+Todos os endpoints (exceto registro/login) exigem o token JWT no header `Authorization: Bearer {token}`.
+
+## Configuração
+
+A conexão MySQL e os parâmetros do JWT ficam em `appsettings.json`. Ajuste a connection string e a chave secreta antes de executar.
+
+### Criando o banco e usuário MySQL
+
+1. Inicie o servidor MySQL local (no Windows, procure por **MySQL80** em *Serviços* e deixe como *Em execução*).
+2. No DBeaver crie uma nova conexão MySQL com `localhost` ou `127.0.0.1` na porta `3306` usando um usuário com permissão de administração.
+3. Abra uma aba SQL e execute:
+   ```sql
+   CREATE DATABASE dataprocessor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE USER 'dataprocessor_user'@'%' IDENTIFIED BY 'senha_forte';
+   GRANT ALL PRIVILEGES ON dataprocessor.* TO 'dataprocessor_user'@'%';
+   FLUSH PRIVILEGES;
+   ```
+4. Atualize `appsettings.json` com a connection string: `server=127.0.0.1;port=3306;database=dataprocessor;user=dataprocessor_user;password=senha_forte;`.
+
+### Resolvendo "Connection refused" no DBeaver
+
+- Confirme que o serviço MySQL está realmente iniciado. No Windows, abra *Services.msc* e dê **Start** no serviço.
+- Caso esteja usando Docker, verifique se o container está rodando (`docker ps`) e expondo a porta `3306`.
+- Teste com `127.0.0.1` em vez de `localhost` e habilite *Allow public key retrieval* na aba *Driver properties* caso use MySQL 8.
+- Certifique-se de que nenhum firewall local esteja bloqueando a porta 3306.
+- Depois de ajustar, clique em **Test Connection** novamente; se continuar falhando, consulte os logs do servidor MySQL para mensagens mais detalhadas.
+
+### Instalando a ferramenta `dotnet-ef`
+
+O erro `Could not execute because the specified command or file was not found` indica que a ferramenta `dotnet-ef` não está instalada ou não está no `PATH` do terminal (mesmo dentro do Developer PowerShell do Visual Studio).
+
+1. Confirme se o SDK do .NET 6 está instalado executando `dotnet --version`. Se o comando não existir, instale o SDK a partir de <https://dotnet.microsoft.com/download>.
+2. Em seguida, instale a ferramenta global:
+   ```powershell
+   dotnet tool install --global dotnet-ef
+   ```
+   Se já tiver instalado antes, utilize `dotnet tool update --global dotnet-ef`.
+3. Garanta que a pasta `%USERPROFILE%\.dotnet\tools` (Windows) ou `$HOME/.dotnet/tools` (Linux/macOS) está no `PATH`. O instalador global informa o caminho ao final da execução.
+4. Feche e abra novamente o terminal/Developer PowerShell para que a variável de ambiente seja recarregada.
+5. Valide com:
+   ```powershell
+   dotnet ef --version
+   ```
+   O comando deve exibir a versão instalada (por exemplo, `6.x.x`).
+
+Depois disso, execute novamente o comando da migração:
+
+```powershell
+dotnet ef migrations add InitialCreate -p src/DataProcessor.Data -s src/DataProcessor.Api
+```
+
+## Exportação Excel
+
+O endpoint `/api/report/amazon-sales/export` retorna o arquivo `.xlsx` gerado com ClosedXML contendo o resumo e os itens.
