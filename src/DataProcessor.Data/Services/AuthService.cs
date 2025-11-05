@@ -48,9 +48,9 @@ public class AuthService : IAuthService
         };
 
         await _userRepository.AddAsync(user, cancellationToken);
-        await _userRepository.SaveChangesAsync(cancellationToken);
-
         await _subscriptionService.CreateTrialSubscriptionAsync(user, cancellationToken);
+
+        await _userRepository.SaveChangesAsync(cancellationToken);
 
         return await BuildLoginResponseAsync(user, cancellationToken);
     }

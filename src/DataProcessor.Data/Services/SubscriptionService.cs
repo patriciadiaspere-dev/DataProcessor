@@ -14,6 +14,12 @@ public class SubscriptionService : ISubscriptionService
 
     public async Task CreateTrialSubscriptionAsync(User user, CancellationToken cancellationToken = default)
     {
+        var existing = await _subscriptionRepository.GetActiveByUserAsync(user.Id, cancellationToken);
+        if (existing is not null)
+        {
+            return;
+        }
+
         var subscription = new Subscription
         {
             Id = Guid.NewGuid(),
@@ -25,7 +31,6 @@ public class SubscriptionService : ISubscriptionService
         };
 
         await _subscriptionRepository.AddAsync(subscription, cancellationToken);
-        await _subscriptionRepository.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<string> GetUserStatusAsync(User user, CancellationToken cancellationToken = default)
