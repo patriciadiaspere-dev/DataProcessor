@@ -31,10 +31,19 @@ A conexão MySQL e os parâmetros do JWT ficam em `appsettings.json`. Ajuste a c
 2. No DBeaver crie uma nova conexão MySQL com `localhost` ou `127.0.0.1` na porta `3306` usando um usuário com permissão de administração.
 3. Abra uma aba SQL e execute:
    ```sql
-   CREATE DATABASE dataprocessor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   CREATE USER 'dataprocessor_user'@'%' IDENTIFIED BY 'senha_forte';
-   GRANT ALL PRIVILEGES ON dataprocessor.* TO 'dataprocessor_user'@'%';
-   FLUSH PRIVILEGES;
+   CREATE DATABASE dataprocessor
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'nome_user'@'localhost' IDENTIFIED BY 'senha_forte';
+
+GRANT SELECT, INSERT, UPDATE, DELETE,
+      ALTER, CREATE, DROP, INDEX,
+      CREATE VIEW, SHOW VIEW,
+      CREATE ROUTINE, ALTER ROUTINE, EXECUTE,
+      TRIGGER, CREATE TEMPORARY TABLES, LOCK TABLES
+ON dataprocessor.* TO 'nome_user'@'localhost';
+
+FLUSH PRIVILEGES;
    ```
 4. Atualize `appsettings.json` com a connection string: `server=127.0.0.1;port=3306;database=dataprocessor;user=dataprocessor_user;password=senha_forte;`.
 
