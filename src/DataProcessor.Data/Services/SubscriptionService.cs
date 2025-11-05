@@ -12,6 +12,7 @@ public class SubscriptionService : ISubscriptionService
         _subscriptionRepository = subscriptionRepository;
     }
 
+<<<<<<< HEAD
     public async Task CreateTrialSubscriptionAsync(User user, CancellationToken cancellationToken = default)
     {
         var existing = await _subscriptionRepository.GetActiveByUserAsync(user.Id, cancellationToken);
@@ -33,6 +34,8 @@ public class SubscriptionService : ISubscriptionService
         user.Subscriptions.Add(subscription);
     }
 
+=======
+>>>>>>> main
     public async Task<string> GetUserStatusAsync(User user, CancellationToken cancellationToken = default)
     {
         if (user.TrialExpiresAt > DateTime.UtcNow)

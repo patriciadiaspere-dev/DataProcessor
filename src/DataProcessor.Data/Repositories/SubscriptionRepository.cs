@@ -20,6 +20,7 @@ public class SubscriptionRepository : ISubscriptionRepository
             .OrderByDescending(s => s.EndDate)
             .FirstOrDefaultAsync(cancellationToken);
     }
+<<<<<<< HEAD
 
     public async Task AddAsync(Subscription subscription, CancellationToken cancellationToken = default)
     {
@@ -30,4 +31,6 @@ public class SubscriptionRepository : ISubscriptionRepository
     {
         return _context.SaveChangesAsync(cancellationToken);
     }
+=======
+>>>>>>> main
 }

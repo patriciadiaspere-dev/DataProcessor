@@ -48,8 +48,11 @@ public class AuthService : IAuthService
         };
 
         await _userRepository.AddAsync(user, cancellationToken);
+<<<<<<< HEAD
         await _subscriptionService.CreateTrialSubscriptionAsync(user, cancellationToken);
 
+=======
+>>>>>>> main
         await _userRepository.SaveChangesAsync(cancellationToken);
 
         return await BuildLoginResponseAsync(user, cancellationToken);

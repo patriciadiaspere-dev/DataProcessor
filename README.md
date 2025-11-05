@@ -25,6 +25,7 @@ Todos os endpoints (exceto registro/login) exigem o token JWT no header `Authori
 
 A conexão MySQL e os parâmetros do JWT ficam em `appsettings.json`. Ajuste a connection string e a chave secreta antes de executar.
 
+<<<<<<< HEAD
 ### Criando o banco e usuário MySQL
 
 1. Inicie o servidor MySQL local (no Windows, procure por **MySQL80** em *Serviços* e deixe como *Em execução*).
@@ -70,6 +71,8 @@ Depois disso, execute novamente o comando da migração:
 dotnet ef migrations add InitialCreate -p src/DataProcessor.Data -s src/DataProcessor.Api
 ```
 
+=======
+>>>>>>> main
 ## Exportação Excel
 
 O endpoint `/api/report/amazon-sales/export` retorna o arquivo `.xlsx` gerado com ClosedXML contendo o resumo e os itens.
