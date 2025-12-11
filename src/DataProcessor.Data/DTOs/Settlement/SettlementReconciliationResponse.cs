@@ -48,5 +48,4 @@ public class SettlementAmountComponentResponse
     public string Type { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public string Currency { get; set; } = string.Empty;
-}
-using System;
+};
