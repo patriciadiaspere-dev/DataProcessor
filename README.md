@@ -25,7 +25,6 @@ Todos os endpoints (exceto registro/login) exigem o token JWT no header `Authori
 
 A conexão MySQL e os parâmetros do JWT ficam em `appsettings.json`. Ajuste a connection string e a chave secreta antes de executar.
 
-<<<<<<< HEAD
 ### Criando o banco e usuário MySQL
 
 1. Inicie o servidor MySQL local (no Windows, procure por **MySQL80** em *Serviços* e deixe como *Em execução*).
@@ -47,32 +46,51 @@ A conexão MySQL e os parâmetros do JWT ficam em `appsettings.json`. Ajuste a c
 - Certifique-se de que nenhum firewall local esteja bloqueando a porta 3306.
 - Depois de ajustar, clique em **Test Connection** novamente; se continuar falhando, consulte os logs do servidor MySQL para mensagens mais detalhadas.
 
-### Instalando a ferramenta `dotnet-ef`
+### Passo a passo para preparar o ambiente e rodar as migrações
 
-O erro `Could not execute because the specified command or file was not found` indica que a ferramenta `dotnet-ef` não está instalada ou não está no `PATH` do terminal (mesmo dentro do Developer PowerShell do Visual Studio).
+Siga nesta ordem (Windows/Developer PowerShell):
 
-1. Confirme se o SDK do .NET 6 está instalado executando `dotnet --version`. Se o comando não existir, instale o SDK a partir de <https://dotnet.microsoft.com/download>.
-2. Em seguida, instale a ferramenta global:
+1. **Confirmar o SDK .NET**
    ```powershell
-   dotnet tool install --global dotnet-ef
+   dotnet --version
    ```
-   Se já tiver instalado antes, utilize `dotnet tool update --global dotnet-ef`.
-3. Garanta que a pasta `%USERPROFILE%\.dotnet\tools` (Windows) ou `$HOME/.dotnet/tools` (Linux/macOS) está no `PATH`. O instalador global informa o caminho ao final da execução.
-4. Feche e abra novamente o terminal/Developer PowerShell para que a variável de ambiente seja recarregada.
-5. Valide com:
+   Se o comando não existir, instale o SDK 6.x em <https://dotnet.microsoft.com/download>.
+
+2. **Restaurar/instalar o `dotnet-ef`** (usa o manifesto do repositório)
+   ```powershell
+   dotnet tool restore
+   # se preferir, instalação global:
+   # dotnet tool install --global dotnet-ef
+   ```
+   Depois confirme:
    ```powershell
    dotnet ef --version
    ```
-   O comando deve exibir a versão instalada (por exemplo, `6.x.x`).
 
-Depois disso, execute novamente o comando da migração:
+3. **Conferir a connection string**
+   - Edite `src/DataProcessor.Api/appsettings.json` (chave `DefaultConnection`) para apontar para seu MySQL. Ex.: `server=127.0.0.1;port=3306;database=dataprocessor;user=dataprocessor_user;password=senha_forte;`.
 
-```powershell
-dotnet ef migrations add InitialCreate -p src/DataProcessor.Data -s src/DataProcessor.Api
-```
+4. **Aplicar as migrações** a partir da raiz do repo:
+   ```powershell
+   dotnet ef database update -p src/DataProcessor.Data -s src/DataProcessor.Api
+   ```
+   (opcional) use o script `scripts/aplicar-migracoes.ps1` que automatiza os passos acima.
 
-=======
->>>>>>> main
+5. **Erros comuns e correções rápidas**
+   - *"não é reconhecido como nome de cmdlet"*: o terminal não achou o `dotnet` ou `dotnet-ef`. Rode `dotnet tool restore` (ou instale global) e abra um novo terminal.
+   - *Falha de conexão MySQL*: revise host, porta e credenciais na connection string; confirme que o serviço está ativo e escutando na porta 3306.
+   - *Permissão negada*: use um usuário MySQL com privilégio de `CREATE/ALTER` no banco configurado.
 ## Exportação Excel
 
 O endpoint `/api/report/amazon-sales/export` retorna o arquivo `.xlsx` gerado com ClosedXML contendo o resumo e os itens.
+
+## Como aplicar migrações (MySQL)
+1. Instale o SDK .NET 6 (ou superior) e o `dotnet-ef` (já incluído no manifesto `.config/dotnet-tools.json`).
+2. Configure a connection string em `src/DataProcessor.Api/appsettings.json` na chave `DefaultConnection`.
+3. Execute, a partir da raiz do repositório:
+   ```powershell
+   dotnet tool restore
+   dotnet ef database update -p src/DataProcessor.Data -s src/DataProcessor.Api
+   ```
+   Se preferir, use o script PowerShell `scripts/aplicar-migracoes.ps1`.
+4. O erro exibido na captura (``<algo> não é reconhecido como nome de cmdlet``) normalmente ocorre quando o comando é colado com texto extra ou o `dotnet-ef` não está instalado. Rode `dotnet tool restore` antes e copie apenas o comando acima.
