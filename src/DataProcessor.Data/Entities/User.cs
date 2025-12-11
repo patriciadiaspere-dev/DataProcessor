@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace DataProcessor.Data.Entities;
 
 public class User
@@ -11,4 +14,5 @@ public class User
     public DateTime TrialExpiresAt { get; set; }
 
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+    public ICollection<SettlementUpload> SettlementUploads { get; set; } = new List<SettlementUpload>();
 }

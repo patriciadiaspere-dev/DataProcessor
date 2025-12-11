@@ -27,9 +27,12 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<ISettlementReportService, SettlementReportService>();
 
 builder.Services.AddSingleton<IReportProcessor, AmazonSalesProcessor>();
 builder.Services.AddSingleton<IReportExcelWriter, ExcelReportWriter>();
+builder.Services.AddSingleton<ISettlementReportProcessor, SettlementReportProcessor>();
+builder.Services.AddSingleton<AmazonSalesOrderLookupBuilder>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>() ?? new JwtSettings();
 if (string.IsNullOrWhiteSpace(jwtSettings.SecretKey))
